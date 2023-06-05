@@ -38,69 +38,76 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
 //creating a book card//
 
-let myLibrary = [];
+class Book {
+  constructor(title, author, pages, read) {
+    this.title = title
+    this.author = author
+    this.pages = pages
+    this.read = read
+  }
 
-function Book(title, author, pages, read) {
-  this.title = title
-  this.author = author
-  this.pages = pages
-  this.read = read
-}
-
-Book.prototype.toggleRead = function() {
-  this.read = !this.read;
-}
-
-function toggleRead(index) {
-  myLibrary[index].toggleRead()
-  render()
-}
-
-function render() {
-  let libraryEl = document.querySelector("#library")
-  libraryEl.innerHTML = "";
-  for (let i = 0; i < myLibrary.length; i++) {
-    let book = myLibrary[i]
-    let bookEl = document.createElement("div");
-    bookEl.setAttribute("class", "bookCard")
-    bookEl.innerHTML = 
-      `<div class="cardHeader">
-        <div class="btnContainer" onclick="removeBook(${i})">
-          <svg width="20px" height="20px" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-            <path fill="#444" d="M15.1 3.1l-2.2-2.2-4.9 5-4.9-5-2.2 2.2 5 4.9-5 4.9 2.2 2.2 4.9-5 4.9 5 2.2-2.2-5-4.9z" class="removeBtn"></path>
-          </svg>
-        </div>
-      </div>
-      <div class="cardBody">
-        <h3 class="title">${book.title}</h3>
-        <p>by</p>
-        <h4 class="author">${book.author}</h4>
-      </div>
-      <div class="cardFooter">
-        <p class="pages">${book.pages} pages</p>
-        <button class="readBtn ${book.read ? 'read' : 'not-read'}" onclick="toggleRead(${i})">${book.read ? "Read" : "Not Read Yet"} </button>
-      </div>`
-    libraryEl.appendChild(bookEl);
+  toggleRead() {
+    this.read = !this.read;
   }
 }
 
-function removeBook (index) {
-  myLibrary.splice(index, 1);
-  render();
+class Library {
+  constructor() {
+    this.myLibrary = [];
+  }
+  toggleRead(index) {
+    this.myLibrary[index].toggleRead();
+    this.render();
+  }
+
+  render() {
+    let libraryEl = document.querySelector("#library")
+    libraryEl.innerHTML = "";
+    for (let i = 0; i < this.myLibrary.length; i++) {
+      let book = this.myLibrary[i]
+      let bookEl = document.createElement("div");
+      bookEl.setAttribute("class", "bookCard")
+      bookEl.innerHTML = 
+        `<div class="cardHeader">
+          <div class="btnContainer" onclick="library.removeBook(${i})">
+            <svg width="20px" height="20px" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+              <path fill="#444" d="M15.1 3.1l-2.2-2.2-4.9 5-4.9-5-2.2 2.2 5 4.9-5 4.9 2.2 2.2 4.9-5 4.9 5 2.2-2.2-5-4.9z" class="removeBtn"></path>
+            </svg>
+          </div>
+        </div>
+        <div class="cardBody">
+          <h3 class="title">${book.title}</h3>
+          <p>by</p>
+          <h4 class="author">${book.author}</h4>
+        </div>
+        <div class="cardFooter">
+          <p class="pages">${book.pages} pages</p>
+          <button class="readBtn ${book.read ? 'read' : 'not-read'}" onclick="library.toggleRead(${i})">${book.read ? "Read" : "Not Read Yet"} </button>
+        </div>`
+      libraryEl.appendChild(bookEl);
+    }
+  }
+
+  removeBook (index) {
+    this.myLibrary.splice(index, 1);
+    this.render();
+  }
+
+  addBooktoLibrary() {
+    let title = document.querySelector("#title").value;
+    let author = document.getElementById("author").value;
+    let pages = document.getElementById("pages").value;
+    let read = document.getElementById("read").checked;
+    let newBook = new Book(title, author, pages, read);
+    this.myLibrary.push(newBook);
+    modal.style.display = "none";
+    this.render();
+  }
 }
 
-function addBooktoLibrary() {
-  let title = document.querySelector("#title").value
-  let author = document.getElementById("author").value
-  let pages = document.getElementById("pages").value
-  let read = document.getElementById("read").checked
-  let newBook = new Book(title, author, pages, read)
-  myLibrary.push(newBook);
-  modal.style.display = "none";
-  render();
-}
+const library = new Library();
 
 document.querySelector("#addBookForm").addEventListener("submit",function (event){
   event.preventDefault();
-  addBooktoLibrary();
+  library.addBooktoLibrary();
 })
